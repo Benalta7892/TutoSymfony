@@ -21,18 +21,17 @@ class RecipeController extends AbstractController
 
 
   #[Route('/recettes/{slug}-{id}', name: 'recipe.show', requirements: ['id' => '\d+', 'slug' => '[a-z0-9-]+'])]
-  public function show(Request $request, string $slug, int $id): Response
+  public function show(Request $request, string $slug, int $id, RecipeRepository $repository): Response
   {
+    $recipe = $repository->find($id);
+    if ($recipe->getSlug() != $slug) {
+      return $this->redirectToRoute('recipe.show', ['slug' => $recipe->getSlug(), 'id' => $recipe->getId()]);
+    }
+    // dd($recipe);
     return $this->render(
       'recipe/show.html.twig',
       [
-        'slug' => $slug,
-        'id' => $id,
-        'demo' => '<strong>Hello</strong>',
-        'person' => [
-          'firstname' => 'john',
-          'lastname' => 'Doe'
-        ]
+        'recipe' => $recipe,
       ]
     );
   }
