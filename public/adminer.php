@@ -5608,18 +5608,18 @@ Adminer
     }
     echo "</table>\n";
   }
-  function
-  selectColumnsPrint($L, $f)
+  function selectColumnsPrint($L, $f)
   {
     global $nd, $td;
     print_fieldset("select", 'Select', $L);
     $t = 0;
     $L[""] = array();
-    foreach ($L
-      as $z => $X) {
-      $X = $_GET["columns"][$z];
-      $e = select_input(" name='columns[$t][col]'", $f, $X["col"], ($z !== "" ? "selectFieldChange" : "selectAddRow"));
-      echo "<div>" . ($nd || $td ? "<select name='columns[$t][fun]'>" . optionlist(array(-1 => "") + array_filter(array('Functions' => $nd, 'Aggregation' => $td)), $X["fun"]) . "</select>" . on_help("getTarget(event).value && getTarget(event).value.replace(/ |\$/, '(') + ')'", 1) . script("qsl('select').onchange = function () { helpClose();" . ($z !== "" ? "" : " qsl('select, input', this.parentNode).onchange();") . " };", "") . "($e)" : $e) . "</div>\n";
+    foreach ($L as $z => $X) {
+      if (isset($_GET["columns"][$z])) { // Vérifie que l'index existe avant d'y accéder
+        $X = $_GET["columns"][$z];
+        $e = select_input(" name='columns[$t][col]'", $f, isset($X["col"]) ? $X["col"] : '', ($z !== "" ? "selectFieldChange" : "selectAddRow"));
+        echo "<div>" . ($nd || $td ? "<select name='columns[$t][fun]'>" . optionlist(array(-1 => "") + array_filter(array('Functions' => $nd, 'Aggregation' => $td)), isset($X["fun"]) ? $X["fun"] : '') . "</select>" . on_help("getTarget(event).value && getTarget(event).value.replace(/ |\$/, '(') + ')'", 1) . script("qsl('select').onchange = function () { helpClose();" . ($z !== "" ? "" : " qsl('select, input', this.parentNode).onchange();") . " };", "") . "($e)" : $e) . "</div>\n";
+      }
       $t++;
     }
     echo "</div></fieldset>\n";
@@ -9416,9 +9416,10 @@ ON DELETE: ', html_select("on_delete", array(-1 => "") + explode("|", $pf), $J["
                             $zg = 1;
                             foreach ($K[0] as $z => $X) {
                               if (!isset($Gi[$z])) {
-                                $X = $_GET["columns"][key($L)];
-                                $o = $p[$L ? ($X ? $X["col"] : current($L)) : $z];
-                                $D = ($o ? $b->fieldName($o, $zg) : ($X["fun"] ? "*" : $z));
+                                $X = isset($_GET["columns"][key($L)]) ? $_GET["columns"][key($L)] : null;
+                                $col = $L ? ($X ? (isset($X["col"]) ? $X["col"] : null) : current($L)) : $z;
+                                $o = isset($p[$col]) ? $p[$col] : null;
+                                $D = ($o ? $b->fieldName($o, $zg) : (isset($X["fun"]) && $X["fun"] ? "*" : $z));
                                 if ($D != "") {
                                   $zg++;
                                   $Ve[$z] = $D;
@@ -9426,15 +9427,14 @@ ON DELETE: ', html_select("on_delete", array(-1 => "") + explode("|", $pf), $J["
                                   $Ed = remove_from_uri('(order|desc)[^=]*|page') . '&order%5B0%5D=' . urlencode($z);
                                   $bc = "&desc%5B0%5D=1";
                                   echo "<th id='th[" . h(bracket_escape($z)) . "]'>" . script("mixin(qsl('th'), {onmouseover: partial(columnMouse), onmouseout: partial(columnMouse, ' hidden')});", ""), '<a href="' . h($Ed . ($zf[0] == $e || $zf[0] == $z || (!$zf && $ae && $qd[0] == $e) ? $bc : '')) . '">';
-                                  echo
-                                  apply_sql_function($X["fun"], $D) . "</a>";
+                                  echo apply_sql_function(isset($X["fun"]) ? $X["fun"] : null, $D) . "</a>";
                                   echo "<span class='column hidden'>", "<a href='" . h($Ed . $bc) . "' title='" . 'descending' . "' class='text'> ↓</a>";
-                                  if (!$X["fun"]) {
+                                  if (!isset($X["fun"]) || !$X["fun"]) {
                                     echo '<a href="#fieldset-search" title="' . 'Search' . '" class="text jsonly"> =</a>', script("qsl('a').onclick = partial(selectSearch, '" . js_escape($z) . "');");
                                   }
                                   echo "</span>";
                                 }
-                                $nd[$z] = $X["fun"];
+                                $nd[$z] = isset($X["fun"]) ? $X["fun"] : null;
                                 next($L);
                               }
                             }
@@ -9475,32 +9475,49 @@ ON DELETE: ', html_select("on_delete", array(-1 => "") + explode("|", $pf), $J["
                                 if (isset($Ve[$z])) {
                                   $o = $p[$z];
                                   $X = $m->value($X, $o);
-                                  if ($X != "" && (!isset($wc[$z]) || $wc[$z] != "")) $wc[$z] = (is_mail($X) ? $Ve[$z] : "");
+                                  if ($X != "" && (!isset($wc[$z]) || $wc[$z] != "")) {
+                                    $wc[$z] = (is_mail($X) ? $Ve[$z] : "");
+                                  }
                                   $A = "";
-                                  if (preg_match('~blob|bytea|raw|file~', $o["type"]) && $X != "") $A = ME . 'download=' . urlencode($a) . '&field=' . urlencode($z) . $Ei;
+                                  if (preg_match('~blob|bytea|raw|file~', $o["type"]) && $X != "") {
+                                    $A = ME . 'download=' . urlencode($a) . '&field=' . urlencode($z) . $Ei;
+                                  }
                                   if (!$A && $X !== null) {
-                                    foreach ((array)$hd[$z] as $r) {
-                                      if (count($hd[$z]) == 1 || end($r["source"]) == $z) {
-                                        $A = "";
-                                        foreach ($r["source"] as $t => $vh) $A .= where_link($t, $r["target"][$t], $K[$Ue][$vh]);
-                                        $A = ($r["db"] != "" ? preg_replace('~([?&]db=)[^&]+~', '\1' . urlencode($r["db"]), ME) : ME) . 'select=' . urlencode($r["table"]) . $A;
-                                        if ($r["ns"]) $A = preg_replace('~([?&]ns=)[^&]+~', '\1' . urlencode($r["ns"]), $A);
-                                        if (count($r["source"]) == 1) break;
+                                    if (isset($hd[$z]) && is_array($hd[$z])) {
+                                      foreach ($hd[$z] as $r) {
+                                        if (count($hd[$z]) == 1 || end($r["source"]) == $z) {
+                                          $A = "";
+                                          foreach ($r["source"] as $t => $vh) {
+                                            if (isset($K[$Ue][$vh])) {
+                                              $A .= where_link($t, $r["target"][$t], $K[$Ue][$vh]);
+                                            }
+                                          }
+                                          $A = ($r["db"] != "" ? preg_replace('~([?&]db=)[^&]+~', '\1' . urlencode($r["db"]), ME) : ME) . 'select=' . urlencode($r["table"]) . $A;
+                                          if ($r["ns"]) {
+                                            $A = preg_replace('~([?&]ns=)[^&]+~', '\1' . urlencode($r["ns"]), $A);
+                                          }
+                                          if (count($r["source"]) == 1) break;
+                                        }
                                       }
                                     }
                                   }
                                   if ($z == "COUNT(*)") {
                                     $A = ME . "select=" . urlencode($a);
                                     $t = 0;
-                                    foreach ((array)$_GET["where"] as $W) {
-                                      if (!array_key_exists($W["col"], $Di)) $A .= where_link($t++, $W["col"], $W["val"], $W["op"]);
+                                    if (isset($_GET["where"]) && is_array($_GET["where"])) {
+                                      foreach ($_GET["where"] as $W) {
+                                        if (!array_key_exists($W["col"], $Di)) {
+                                          $A .= where_link($t++, $W["col"], $W["val"], $W["op"]);
+                                        }
+                                      }
                                     }
-                                    foreach ($Di
-                                      as $fe => $W) $A .= where_link($t++, $fe, $W);
+                                    foreach ($Di as $fe => $W) {
+                                      $A .= where_link($t++, $fe, $W);
+                                    }
                                   }
                                   $X = select_value($X, $A, $o, $ci);
                                   $u = h("val[$Ei][" . bracket_escape($z) . "]");
-                                  $Y = $_POST["val"][$Ei][bracket_escape($z)];
+                                  $Y = isset($_POST["val"][$Ei][bracket_escape($z)]) ? $_POST["val"][$Ei][bracket_escape($z)] : null;
                                   $rc = !is_array($J[$z]) && is_utf8($X) && $K[$Ue][$z] == $J[$z] && !$nd[$z];
                                   $bi = preg_match('~text|lob~', $o["type"]);
                                   echo "<td id='$u'";
