@@ -940,26 +940,46 @@ edit_form($Q, $p, $J, $Ii)
   if (!$p) echo "<p class='error'>" . 'You have no privileges to update this table.' . "\n";
   else {
     echo "<table cellspacing='0' class='layout'>" . script("qsl('table').onkeydown = editingKeydown;");
-    foreach ($p
-      as $D => $o) {
+    foreach ($p as $D => $o) {
       echo "<tr><th>" . $b->fieldName($o);
-      $Wb = $_GET["set"][bracket_escape($D)];
-      if ($Wb === null) {
-        $Wb = $o["default"];
-        if ($o["type"] == "bit" && preg_match("~^b'([01]*)'\$~", $Wb, $Gg)) $Wb = $Gg[1];
+      $Wb = $_GET["set"][bracket_escape($D)] ?? $o["default"];
+
+      if ($o["type"] == "bit" && preg_match("~^b'([01]*)'\$~", $Wb, $Gg)) {
+        $Wb = $Gg[1];
       }
-      $Y = ($J !== null ? ($J[$D] != "" && $y == "sql" && preg_match("~enum|set~", $o["type"]) ? (is_array($J[$D]) ? array_sum($J[$D]) : +$J[$D]) : (is_bool($J[$D]) ? +$J[$D] : $J[$D])) : (!$Ii && $o["auto_increment"] ? "" : (isset($_GET["select"]) ? false : $Wb)));
-      if (!$_POST["save"] && is_string($Y)) $Y = $b->editVal($Y, $o);
-      $s = ($_POST["save"] ? (string)$_POST["function"][$D] : ($Ii && preg_match('~^CURRENT_TIMESTAMP~i', $o["on_update"]) ? "now" : ($Y === false ? null : ($Y !== null ? '' : 'NULL'))));
-      if (!$_POST && !$Ii && $Y == $o["default"] && preg_match('~^[\w.]+\(~', $Y)) $s = "SQL";
+
+      $Y = $J[$D] ?? (!$Ii && $o["auto_increment"] ? "" : (isset($_GET["select"]) ? false : $Wb));
+
+      if ($J !== null) {
+        if ($J[$D] != "" && $y == "sql" && preg_match("~enum|set~", $o["type"])) {
+          $Y = is_array($J[$D]) ? array_sum($J[$D]) : +$J[$D];
+        } else {
+          $Y = is_bool($J[$D]) ? +$J[$D] : $J[$D];
+        }
+      }
+
+      if (!$_POST["save"] && is_string($Y)) {
+        $Y = $b->editVal($Y, $o);
+      }
+
+      $s = $_POST["save"] ? (string)$_POST["function"][$D] : ($Ii && preg_match('~^CURRENT_TIMESTAMP~i', $o["on_update"]) ? "now" : ($Y === false ? null : ($Y !== null ? '' : 'NULL')));
+
+      if (!$_POST && !$Ii && $Y == $o["default"] && preg_match('~^[\w.]+\(~', $Y)) {
+        $s = "SQL";
+      }
+
       if (preg_match("~time~", $o["type"]) && preg_match('~^CURRENT_TIMESTAMP~i', $Y)) {
         $Y = "";
         $s = "now";
       }
+
       input($o, $Y, $s);
       echo "\n";
     }
-    if (!support("table")) echo "<tr>" . "<th><input name='field_keys[]'>" . script("qsl('input').oninput = fieldChange;") . "<td class='function'>" . html_select("field_funs[]", $b->editFunctions(array("null" => isset($_GET["select"])))) . "<td><input name='field_vals[]'>" . "\n";
+
+    if (!support("table")) {
+      echo "<tr><th><input name='field_keys[]'>" . script("qsl('input').oninput = fieldChange;") . "<td class='function'>" . html_select("field_funs[]", $b->editFunctions(array("null" => isset($_GET["select"])))) . "<td><input name='field_vals[]'>" . "\n";
+    }
     echo "</table>\n";
   }
   echo "<p>\n";
@@ -7463,26 +7483,57 @@ var thousandsSeparator = \'', js_escape(','), '\';
                       echo '<td>', "<input type='image' class='icon' name='add[" . (support("move_col") ? 0 : count($p)) . "]' src='" . h(preg_replace("~\\?.*~", "", ME) . "?file=plus.gif&version=4.8.1") . "' alt='+' title='" . 'Add next' . "'>" . script("row_count = " . count($p) . ";"), '</thead>
 <tbody>
 ', script("mixin(qsl('tbody'), {onclick: editingClick, onkeydown: editingKeydown, oninput: editingInput});");
-                      foreach ($p
-                        as $t => $o) {
+                      foreach ($p as $t => $o) {
                         $t++;
-                        $Cf = $o[($_POST ? "orig" : "field")];
-                        $fc = (isset($_POST["add"][$t - 1]) || (isset($o["field"]) && !$_POST["drop_col"][$t])) && (support("drop_col") || $Cf == "");
-                        echo '<tr', ($fc ? "" : " style='display: none;'"), '>
-', ($T == "PROCEDURE" ? "<td>" . html_select("fields[$t][inout]", explode("|", $Td), $o["inout"]) : ""), '<th>';
-                        if ($fc) {
-                          echo '<input name="fields[', $t, '][field]" value="', h($o["field"]), '" data-maxlength="64" autocapitalize="off" aria-labelledby="label-name">';
+                        $key = $_POST ? "orig" : "field";
+                        $Cf = isset($o[$key]) ? $o[$key] : null;
+
+                        $fc = (isset($_POST["add"][$t - 1]) || (isset($o["field"]) && (!isset($_POST["drop_col"][$t]) || !$_POST["drop_col"][$t]))) && (support("drop_col") || $Cf == "");
+
+                        echo '<tr', ($fc ? "" : " style='display: none;'"), '>';
+
+                        if ($T == "PROCEDURE") {
+                          echo "<td>" . html_select("fields[$t][inout]", explode("|", $Td), isset($o["inout"]) ? $o["inout"] : '') . "</td>";
                         }
+
+                        echo '<th>';
+
+                        if ($fc) {
+                          echo '<input name="fields[', $t, '][field]" value="', h(isset($o["field"]) ? $o["field"] : ''), '" data-maxlength="64" autocapitalize="off" aria-labelledby="label-name">';
+                        }
+
                         echo '<input type="hidden" name="fields[', $t, '][orig]" value="', h($Cf), '">';
+
                         edit_type("fields[$t]", $o, $lb, $hd);
+
                         if ($T == "TABLE") {
-                          echo '<td>', checkbox("fields[$t][null]", 1, $o["null"], "", "", "block", "label-null"), '<td><label class="block"><input type="radio" name="auto_increment_col" value="', $t, '"';
-                          if ($o["auto_increment"]) {
+                          echo '<td>', checkbox("fields[$t][null]", 1, isset($o["null"]) ? $o["null"] : '', "", "", "block", "label-null"),
+                          '<td><label class="block"><input type="radio" name="auto_increment_col" value="', $t, '"';
+
+                          if (isset($o["auto_increment"]) && $o["auto_increment"]) {
                             echo ' checked';
                           }
-                          echo ' aria-labelledby="label-ai"></label><td', $Xb, '>', checkbox("fields[$t][has_default]", 1, $o["has_default"], "", "", "", "label-default"), '<input name="fields[', $t, '][default]" value="', h($o["default"]), '" aria-labelledby="label-default">', (support("comment") ? "<td$sb><input name='fields[$t][comment]' value='" . h($o["comment"]) . "' data-maxlength='" . (min_version(5.5) ? 1024 : 255) . "' aria-labelledby='label-comment'>" : "");
+
+                          echo ' aria-labelledby="label-ai"></label><td', $Xb, '>', checkbox("fields[$t][has_default]", 1, isset($o["has_default"]) ? $o["has_default"] : '', "", "", "", "label-default"),
+                          '<input name="fields[', $t, '][default]" value="', h(isset($o["default"]) ? $o["default"] : ''), '" aria-labelledby="label-default">';
+
+                          if (support("comment")) {
+                            echo "<td$sb><input name='fields[$t][comment]' value='" . h(isset($o["comment"]) ? $o["comment"] : '') . "' data-maxlength='" . (min_version(5.5) ? 1024 : 255) . "' aria-labelledby='label-comment'></td>";
+                          }
                         }
-                        echo "<td>", (support("move_col") ? "<input type='image' class='icon' name='add[$t]' src='" . h(preg_replace("~\\?.*~", "", ME) . "?file=plus.gif&version=4.8.1") . "' alt='+' title='" . 'Add next' . "'> " . "<input type='image' class='icon' name='up[$t]' src='" . h(preg_replace("~\\?.*~", "", ME) . "?file=up.gif&version=4.8.1") . "' alt='↑' title='" . 'Move up' . "'> " . "<input type='image' class='icon' name='down[$t]' src='" . h(preg_replace("~\\?.*~", "", ME) . "?file=down.gif&version=4.8.1") . "' alt='↓' title='" . 'Move down' . "'> " : ""), ($Cf == "" || support("drop_col") ? "<input type='image' class='icon' name='drop_col[$t]' src='" . h(preg_replace("~\\?.*~", "", ME) . "?file=cross.gif&version=4.8.1") . "' alt='x' title='" . 'Remove' . "'>" : "");
+
+                        echo "<td>";
+
+                        if (support("move_col")) {
+                          echo "<input type='image' class='icon' name='add[$t]' src='" . h(preg_replace("~\\?.*~", "", ME) . "?file=plus.gif&version=4.8.1") . "' alt='+' title='Add next'> " .
+                            "<input type='image' class='icon' name='up[$t]' src='" . h(preg_replace("~\\?.*~", "", ME) . "?file=up.gif&version=4.8.1") . "' alt='↑' title='Move up'> " .
+                            "<input type='image' class='icon' name='down[$t]' src='" . h(preg_replace("~\\?.*~", "", ME) . "?file=down.gif&version=4.8.1") . "' alt='↓' title='Move down'> ";
+                        }
+
+                        if ($Cf == "" || support("drop_col")) {
+                          echo "<input type='image' class='icon' name='drop_col[$t]' src='" . h(preg_replace("~\\?.*~", "", ME) . "?file=cross.gif&version=4.8.1") . "' alt='x' title='Remove'>";
+                        }
+                        echo '</tr>';
                       }
                     }
                     function
