@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Recipe;
+use App\Form\RecipeType;
 use App\Repository\RecipeRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -50,5 +51,21 @@ class RecipeController extends AbstractController
         'recipe' => $recipe,
       ]
     );
+  }
+
+  #[Route("/recettes/{id}/edit", name: "recipe.edit")]
+  public function edit(Recipe $recipe, Request $request, EntityManagerInterface $em)
+  {
+    $form = $this->createForm(RecipeType::class, $recipe);
+    $form->handleRequest($request);
+    if ($form->isSubmitted() && $form->isValid()) {
+      $em->flush();
+      $this->addFlash(
+        'success',
+        'La recette a bien été modifié'
+      );
+      return $this->redirectToRoute('recipe.index');
+    }
+    return $this->render('recipe/edit.html.twig', ['recipe' => $recipe, 'form' => $form]);
   }
 }
