@@ -12,6 +12,9 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\String\Slugger\AsciiSlugger;
+use Symfony\Component\Validator\Constraints\Length;
+use Symfony\Component\Validator\Constraints\Regex;
+use Symfony\Component\Validator\Constraints\Sequentially;
 
 
 class RecipeType extends AbstractType
@@ -20,7 +23,13 @@ class RecipeType extends AbstractType
   {
     $builder
       ->add('title')
-      ->add('slug', TextType::class, ['required' => false])
+      ->add('slug', TextType::class, [
+        'required' => false,
+        'constraints' => new Sequentially([
+          new Length(min: 10),
+          new Regex('/^[a-z0-9]+(?:-[a-z0-9]+)*$/', message: 'Ceci n\'est pas un slug valide.')
+        ])
+      ])
       ->add('content')
       ->add('duration')
       ->add('save', SubmitType::class, ['label' => 'Envoyer'])
