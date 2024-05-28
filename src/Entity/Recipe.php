@@ -90,7 +90,7 @@ class Recipe
     return $this->updateAt;
   }
 
-  public function setUpdateAt(\DateTimeImmutable $updateAt): static
+  public function setUpdatedAt(\DateTimeImmutable $updateAt): static
   {
     $this->updateAt = $updateAt;
 
