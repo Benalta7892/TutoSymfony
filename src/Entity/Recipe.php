@@ -7,6 +7,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
+use App\Validator\BanWord;
 
 
 #[ORM\Entity(repositoryClass: RecipeRepository::class)]
@@ -21,6 +22,7 @@ class Recipe
 
   #[ORM\Column(length: 255)]
   #[Assert\Length(min: 5)]
+  #[BanWord()]
   private ?string $title = null;
 
   #[ORM\Column(length: 255)]
