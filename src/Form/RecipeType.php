@@ -25,10 +25,6 @@ class RecipeType extends AbstractType
       ->add('title')
       ->add('slug', TextType::class, [
         'required' => false,
-        'constraints' => new Sequentially([
-          new Length(min: 10),
-          new Regex('/^[a-z0-9]+(?:-[a-z0-9]+)*$/', message: 'Ceci n\'est pas un slug valide.')
-        ])
       ])
       ->add('content')
       ->add('duration')
