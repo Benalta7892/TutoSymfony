@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Demo;
 use App\Entity\Recipe;
 use App\Form\RecipeType;
 use App\Repository\RecipeRepository;
@@ -15,15 +16,6 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class RecipeController extends AbstractController
 {
-
-  #[Route('/demo')]
-  public function demo(ValidatorInterface $validator)
-  {
-    $recipe = new Recipe();
-    $errors = $validator->validate($recipe);
-    dd((string)$errors);
-  }
-
 
 
   #[Route('/recettes', name: 'recipe.index')]
