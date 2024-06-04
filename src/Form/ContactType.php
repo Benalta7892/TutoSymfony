@@ -10,6 +10,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 
 class ContactType extends AbstractType
 {
@@ -27,7 +28,14 @@ class ContactType extends AbstractType
       ])
       ->add('save', SubmitType::class, [
         'label' => 'Envoyer',
-      ]);
+      ])
+      ->add('service', ChoiceType::class, [
+        'choices'  => [
+          'Compta' => 'compta@demo.fr',
+          'Support' => 'support@demo.fr',
+          'Marketing' => 'marketing@demo.fr',
+        ],
+      ]);;
   }
 
   public function configureOptions(OptionsResolver $resolver): void

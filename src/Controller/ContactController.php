@@ -21,17 +21,11 @@ class ContactController extends AbstractController
 
     $data = new ContactDTO();
 
-    // TODO : Supprimer ca
-    $data->name = 'John Doe';
-    $data->email = 'john@doe.fr';
-    $data->message = 'Super site';
-
-
     $form = $this->createForm(ContactType::class, $data);
     $form->handleRequest($request);
     if ($form->isSubmitted() && $form->isValid()) {
       $email = (new TemplatedEmail())
-        ->to('contact@demo.fr')
+        ->to($data->service)
         ->from($data->email)
         ->subject('Demande de contact')
         ->htmlTemplate('emails/contact.html.twig')
@@ -42,7 +36,7 @@ class ContactController extends AbstractController
         'success',
         'Votre email a bien été envoyé.'
       );
-      $this->redirectToRoute('contact');
+      return $this->redirectToRoute('contact');
     }
 
 
