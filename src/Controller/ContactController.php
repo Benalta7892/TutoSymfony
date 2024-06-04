@@ -4,29 +4,45 @@ namespace App\Controller;
 
 use App\DTO\ContactDTO;
 use App\Form\ContactType;
+use Symfony\Bridge\Twig\Mime\TemplatedEmail;
+use PharIo\Manifest\Email;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Mailer\MailerInterface;
+
 use Symfony\Component\Routing\Attribute\Route;
 
 class ContactController extends AbstractController
 {
   #[Route('/contact', name: 'contact')]
-  public function contact(Request $request): Response
+  public function contact(Request $request, MailerInterface $mailer): Response
   {
 
     $data = new ContactDTO();
 
     // TODO : Supprimer ca
     $data->name = 'John Doe';
-    $data->email = 'john';
+    $data->email = 'john@doe.fr';
     $data->message = 'Super site';
 
 
     $form = $this->createForm(ContactType::class, $data);
     $form->handleRequest($request);
     if ($form->isSubmitted() && $form->isValid()) {
-      // Envoyer email
+      $email = (new TemplatedEmail())
+        ->to('contact@demo.fr')
+        ->from($data->email)
+        ->subject('Demande de contact')
+        ->htmlTemplate('email/contact.html.twig')
+        ->context(['data' => $data]);
+
+      $mailer->send($email);
+      $this->$this->addFlash(
+        'success',
+        'Votre email a bien été envoyé.'
+      );
+      $this->redirectToRoute('contact');
     }
 
 
