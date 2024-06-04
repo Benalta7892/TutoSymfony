@@ -34,11 +34,11 @@ class ContactController extends AbstractController
         ->to('contact@demo.fr')
         ->from($data->email)
         ->subject('Demande de contact')
-        ->htmlTemplate('email/contact.html.twig')
+        ->htmlTemplate('emails/contact.html.twig')
         ->context(['data' => $data]);
 
       $mailer->send($email);
-      $this->$this->addFlash(
+      $this->addFlash(
         'success',
         'Votre email a bien été envoyé.'
       );
