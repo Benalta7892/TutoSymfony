@@ -9,6 +9,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
 class ContactType extends AbstractType
 {
@@ -23,6 +24,9 @@ class ContactType extends AbstractType
       ])
       ->add('message', textareaType::class, [
         'empty_data' => '',
+      ])
+      ->add('save', SubmitType::class, [
+        'label' => 'Envoyer',
       ]);
   }
 
