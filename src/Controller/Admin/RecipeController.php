@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Admin;
 
 use App\Demo;
 use App\Entity\Recipe;
@@ -14,6 +14,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
+#[Route('/admin/recettes', name: 'admin.recipe.')]
 class RecipeController extends AbstractController
 {
 
