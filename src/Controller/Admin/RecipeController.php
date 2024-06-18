@@ -21,7 +21,7 @@ class RecipeController extends AbstractController
 
 
   #[Route('/', name: 'index')]
-  public function index(Request $request, RecipeRepository $repository): Response // ou + EntityManagerInterface $em
+  public function index(RecipeRepository $repository): Response // ou + EntityManagerInterface $em
   {
     $recipes = $repository->findWithDurationLowerThan(20);
     // Supprimer une recette
@@ -39,7 +39,7 @@ class RecipeController extends AbstractController
     //   ->setCreatedAt(new \DateTimeImmutable());
     // $em->persist($recipe);
     // $em->flush();
-    return $this->render('recipe/index.html.twig', ['recipes' => $recipes]);
+    return $this->render('admin/recipe/index.html.twig', ['recipes' => $recipes]);
   }
 
   #[Route("/create", name: "create")]
@@ -55,9 +55,9 @@ class RecipeController extends AbstractController
         'success',
         'La recette a bien été créée'
       );
-      return $this->redirectToRoute('recipe.index');
+      return $this->redirectToRoute('admin.recipe.index');
     }
-    return $this->render('recipe/create.html.twig', ['form' => $form]);
+    return $this->render('admin/recipe/create.html.twig', ['form' => $form]);
   }
 
   #[Route("/{id}", name: "edit", methods: ['GET', 'POST'], requirements: ['id' => Requirement::DIGITS])]
@@ -71,9 +71,9 @@ class RecipeController extends AbstractController
         'success',
         'La recette a bien été modifié'
       );
-      return $this->redirectToRoute('recipe.index');
+      return $this->redirectToRoute('admin.recipe.index');
     }
-    return $this->render('recipe/edit.html.twig', ['recipe' => $recipe, 'form' => $form]);
+    return $this->render('admin/recipe/edit.html.twig', ['recipe' => $recipe, 'form' => $form]);
   }
 
   #[Route("/{id}", name: "delete", methods: ['DELETE'], requirements: ['id' => Requirement::DIGITS])]
@@ -82,6 +82,6 @@ class RecipeController extends AbstractController
     $em->remove($recipe);
     $em->flush();
     $this->addFlash('success', 'La recette a bien été supprimée');
-    return $this->redirectToRoute('recipe.index');
+    return $this->redirectToRoute('admin.recipe.index');
   }
 }
