@@ -5,6 +5,7 @@ namespace App\Controller\Admin;
 use App\Demo;
 use App\Entity\Recipe;
 use App\Form\RecipeType;
+use App\Repository\CategoryRepository;
 use App\Repository\RecipeRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -21,8 +22,12 @@ class RecipeController extends AbstractController
 
 
   #[Route('/', name: 'index')]
-  public function index(RecipeRepository $repository): Response // ou + EntityManagerInterface $em
+  public function index(RecipeRepository $repository, CategoryRepository $categoryRepository, EntityManagerInterface $entityManager): Response // ou + EntityManagerInterface $em
   {
+    $platPrincipal = $categoryRepository->findOneBy(['slug' => 'plat-principal']);
+    $pates = $repository->findOneBy(['slug' => 'pates-bolognaise']);
+    $pates->setCategory($platPrincipal);
+    $entityManager->flush();
     $recipes = $repository->findWithDurationLowerThan(20);
     // Supprimer une recette
     // $em->remove($recipes[0]);
