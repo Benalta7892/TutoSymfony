@@ -24,11 +24,12 @@ class RecipeController extends AbstractController
   #[Route('/', name: 'index')]
   public function index(RecipeRepository $repository, CategoryRepository $categoryRepository, EntityManagerInterface $entityManager): Response // ou + EntityManagerInterface $em
   {
-    $platPrincipal = $categoryRepository->findOneBy(['slug' => 'plat-principal']);
-    $pates = $repository->findOneBy(['slug' => 'pates-bolognaise']);
-    $pates->setCategory($platPrincipal);
-    $entityManager->flush();
+    // $platPrincipal = $categoryRepository->findOneBy(['slug' => 'plat-principal']);
+    // $pates = $repository->findOneBy(['slug' => 'pates-bolognaise']);
+    // $pates->setCategory($platPrincipal);
+    // $entityManager->flush();
     $recipes = $repository->findWithDurationLowerThan(20);
+    $recipes[0]->getCategory()->getName();
     // Supprimer une recette
     // $em->remove($recipes[0]);
     // $em->flush();
