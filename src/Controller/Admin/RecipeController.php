@@ -17,6 +17,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Requirement\Requirement;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
+
 #[Route('/admin/recettes', name: 'admin.recipe.')]
 class RecipeController extends AbstractController
 {
@@ -80,6 +81,11 @@ class RecipeController extends AbstractController
     $form = $this->createForm(RecipeType::class, $recipe);
     $form->handleRequest($request);
     if ($form->isSubmitted() && $form->isValid()) {
+      /** @var UploadedFlie $file */
+      $file = $form->get('thumbnailFile')->getData();
+      $fileName = $recipe->getId() . '.' . $file->getClientOriginalExtension();
+      $file->move($this->getParameter('kernel.project_dir') . '/public/recettes/images', $fileName);
+      $recipe->setThumbnail($fileName);
       $em->flush();
       $this->addFlash(
         'success',
