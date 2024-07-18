@@ -4,6 +4,7 @@ namespace App\Controller\Admin;
 
 use App\Demo;
 use App\Entity\Recipe;
+use App\Entity\Category;
 use App\Form\RecipeType;
 use App\Repository\CategoryRepository;
 use App\Repository\RecipeRepository;
@@ -29,7 +30,14 @@ class RecipeController extends AbstractController
     // $pates->setCategory($platPrincipal);
     // $entityManager->flush();
     $recipes = $repository->findWithDurationLowerThan(20);
-    $recipes[0]->getCategory()->getName();
+    // $category = (new Category())
+    //   ->setUpdatedAt(new \DateTimeImmutable())
+    //   ->setCreatedAt(new \DateTimeImmutable())
+    //   ->setName('demo')
+    //   ->setName('demo');
+    // $recipes[0]->setCategory($category);
+    // $entityManager->flush();
+    // $recipes[0]->getCategory()->getName();
     // Supprimer une recette
     // $em->remove($recipes[0]);
     // $em->flush();
