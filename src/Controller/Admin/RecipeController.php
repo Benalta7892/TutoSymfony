@@ -17,9 +17,11 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Requirement\Requirement;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
+use Symfony\component\Security\Http\Attribute\IsGranted;
 
 
 #[Route('/admin/recettes', name: 'admin.recipe.')]
+#[IsGranted('ROLE_ADMIN')]
 class RecipeController extends AbstractController
 {
 
@@ -27,7 +29,7 @@ class RecipeController extends AbstractController
   #[Route('/', name: 'index')]
   public function index(RecipeRepository $repository, CategoryRepository $categoryRepository, EntityManagerInterface $entityManager): Response // ou + EntityManagerInterface $em
   {
-    $this->denyAccessUnlessGranted('ROLE_USER');
+    // $this->denyAccessUnlessGranted('ROLE_USER'); ce n'est pas la solution la plus optimale
     // $platPrincipal = $categoryRepository->findOneBy(['slug' => 'plat-principal']);
     // $pates = $repository->findOneBy(['slug' => 'pates-bolognaise']);
     // $pates->setCategory($platPrincipal);

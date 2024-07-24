@@ -11,11 +11,13 @@ use Symfony\Component\Routing\Requirement\Requirement;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 
 
 
 #[Route('/admin/category', name: 'admin.category.')]
+#[IsGranted('ROLE_ADMIN')]
 class CategoryController extends AbstractController
 {
 
