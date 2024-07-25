@@ -35,7 +35,7 @@ class RecipeController extends AbstractController
     // $pates->setCategory($platPrincipal);
     // $entityManager->flush();
     $page = $request->query->getInt('page', 1);
-    $limit = 2;
+    $limit = 1;
     $recipes = $repository->paginateRecipes($page, $limit);
     $maxPage = ceil($recipes->count() / $limit);
     // $category = (new Category())
