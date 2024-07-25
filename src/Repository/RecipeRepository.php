@@ -18,13 +18,13 @@ class RecipeRepository extends ServiceEntityRepository
     parent::__construct($registry, Recipe::class);
   }
 
-  public function paginateRecipes(Request $request): Paginator
+  public function paginateRecipes(int $page, int $limit): Paginator
   {
     return new Paginator(
       $this
         ->createQueryBuilder('r')
-        ->setFirstResult(0)
-        ->setMaxResults(2)
+        ->setFirstResult(($page - 1) * $limit)
+        ->setMaxResults($limit)
         ->getQuery()
         ->setHint(Paginator::HINT_ENABLE_DISTINCT, false),
       false

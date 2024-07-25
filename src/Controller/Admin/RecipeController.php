@@ -35,8 +35,9 @@ class RecipeController extends AbstractController
     // $pates->setCategory($platPrincipal);
     // $entityManager->flush();
     $page = $request->query->getInt('page', 1);
-    $recipes = $repository->paginateRecipes($request);
-    $maxPage = ceil($recipes->count() / 2);
+    $limit = 2;
+    $recipes = $repository->paginateRecipes($page, $limit);
+    $maxPage = ceil($recipes->count() / $limit);
     // $category = (new Category())
     //   ->setUpdatedAt(new \DateTimeImmutable())
     //   ->setCreatedAt(new \DateTimeImmutable())
