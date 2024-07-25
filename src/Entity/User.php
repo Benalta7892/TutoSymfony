@@ -37,7 +37,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
   #[ORM\Column(length: 255)]
   private ?string $email = null;
 
-  #[ORM\Column]
+  #[ORM\Column(type: 'boolean', options: ["default" => false])]
   private bool $isVerified = false;
 
   public function getId(): ?int
@@ -133,13 +133,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
   public function isVerified(): bool
   {
-      return $this->isVerified;
+    return $this->isVerified;
   }
 
   public function setVerified(bool $isVerified): static
   {
-      $this->isVerified = $isVerified;
+    $this->isVerified = $isVerified;
 
-      return $this;
+    return $this;
   }
 }
