@@ -27,14 +27,14 @@ class RecipeController extends AbstractController
 
 
   #[Route('/', name: 'index')]
-  public function index(RecipeRepository $repository, CategoryRepository $categoryRepository, EntityManagerInterface $entityManager): Response // ou + EntityManagerInterface $em
+  public function index(RecipeRepository $repository, Request $request): Response // ou + EntityManagerInterface $em
   {
     // $this->denyAccessUnlessGranted('ROLE_USER'); ce n'est pas la solution la plus optimale
     // $platPrincipal = $categoryRepository->findOneBy(['slug' => 'plat-principal']);
     // $pates = $repository->findOneBy(['slug' => 'pates-bolognaise']);
     // $pates->setCategory($platPrincipal);
     // $entityManager->flush();
-    $recipes = $repository->findWithDurationLowerThan(20);
+    $recipes = $repository->paginateRecipes($request);
     // $category = (new Category())
     //   ->setUpdatedAt(new \DateTimeImmutable())
     //   ->setCreatedAt(new \DateTimeImmutable())
