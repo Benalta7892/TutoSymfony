@@ -26,7 +26,8 @@ class RecipeRepository extends ServiceEntityRepository
         ->setFirstResult(0)
         ->setMaxResults(2)
         ->getQuery()
-        ->setHint(Paginator::HINT_ENABLE_DISTINCT, false)
+        ->setHint(Paginator::HINT_ENABLE_DISTINCT, false),
+      false
     );
   }
 

@@ -34,7 +34,9 @@ class RecipeController extends AbstractController
     // $pates = $repository->findOneBy(['slug' => 'pates-bolognaise']);
     // $pates->setCategory($platPrincipal);
     // $entityManager->flush();
+    $page = $request->query->getInt('page', 1);
     $recipes = $repository->paginateRecipes($request);
+    $maxPage = ceil($recipes->count() / 2);
     // $category = (new Category())
     //   ->setUpdatedAt(new \DateTimeImmutable())
     //   ->setCreatedAt(new \DateTimeImmutable())
@@ -58,7 +60,7 @@ class RecipeController extends AbstractController
     //   ->setCreatedAt(new \DateTimeImmutable());
     // $em->persist($recipe);
     // $em->flush();
-    return $this->render('admin/recipe/index.html.twig', ['recipes' => $recipes]);
+    return $this->render('admin/recipe/index.html.twig', ['recipes' => $recipes, 'maxPage' => $maxPage, 'page' => $page]);
   }
 
   #[Route("/create", name: "create")]
