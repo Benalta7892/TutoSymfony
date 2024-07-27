@@ -21,6 +21,15 @@ class CategoryRepository extends ServiceEntityRepository
    */
   public function findAllWithCount(): array
   {
+    // dd(
+    //   $this->getEntityManager()->createQuery(<<<DQL
+    //     SELECT NEW App\DTO\CategoryWithCountDTO(c.id, c.name, COUNT(c.id))
+    //     FROM App\Entity\Category c
+    //     LEFT JOIN c.recipes r
+    //     GROUP BY c.id
+    //   DQL)->getResult()
+    // );
+
     return $this->createQueryBuilder('c')
       ->select('NEW App\DTO\CategoryWithCountDTO(c.id, c.name, COUNT(c.id))')
       ->leftJoin('c.recipes', 'r')
