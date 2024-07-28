@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\File\File;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 use Vich\UploaderBundle\Mapping\Annotation\Uploadable;
 use Vich\UploaderBundle\Mapping\Annotation\UploadableField;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 
 #[ORM\Entity(repositoryClass: RecipeRepository::class)]
@@ -23,20 +24,24 @@ class Recipe
   #[ORM\Id]
   #[ORM\GeneratedValue]
   #[ORM\Column]
+  #[Groups(['recipes.index'])]
   private ?int $id = null;
 
   #[ORM\Column(length: 255)]
   #[Assert\Length(min: 5)]
   #[BanWord()]
+  #[Groups(['recipes.index'])]
   private string $title = '';
 
   #[ORM\Column(length: 255)]
   #[Assert\Length(min: 5)]
   #[Assert\Regex('/^[a-z0-9]+(?:-[a-z0-9]+)*$/', message: 'Ceci n\'est pas un slug valide.')]
+  #[Groups(['recipes.index'])]
   private string $slug = '';
 
   #[ORM\Column(type: Types::TEXT)]
   #[Assert\Length(min: 5)]
+  #[Groups(['recipes.show'])]
   private string $content = '';
 
   #[ORM\Column]
@@ -48,6 +53,7 @@ class Recipe
   #[ORM\Column(nullable: true)]
   #[Assert\Positive()]
   #[Assert\LessThan(value: 1440)]
+  #[Groups(['recipes.index'])]
   private ?int $duration = null;
 
   #[ORM\ManyToOne(inversedBy: 'recipes', cascade: ['persist'])]
