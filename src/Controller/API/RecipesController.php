@@ -6,8 +6,10 @@ use App\Entity\Recipe;
 use App\Repository\RecipeRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Requirement\Requirement;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
 
 
@@ -15,7 +17,7 @@ class RecipesController extends AbstractController
 {
 
   #[Route("/api/recipes", methods: ['GET'])]
-  public function index(RecipeRepository $repository, Request $request, SerializerInterface $serializer)
+  public function index(RecipeRepository $repository, Request $request, SerializerInterface $serializer): Response
   {
     $recipes = $repository->paginateRecipes($request->query->getInt('page', 1));
     return $this->json($recipes, 200, [], [
@@ -30,5 +32,17 @@ class RecipesController extends AbstractController
     return $this->json($recipe, 200, [], [
       'groups' => ['recipes.index', 'recipes.show']
     ]);
+  }
+
+  #[Route("/api/recipes", methods: ['POST'])]
+  public function create(Request $request, SerializerInterface $serializer)
+  {
+    $recipe = new Recipe();
+    $recipe->setCreatedAt(new \DateTimeImmutable());
+    $recipe->setUpdatedAt(new \DateTimeImmutable());
+    dd($serializer->deserialize($request->getContent(), Recipe::class, 'json', [
+      AbstractNormalizer::OBJECT_TO_POPULATE => $recipe,
+      'groups' => ['recipes.create']
+    ]));
   }
 }
