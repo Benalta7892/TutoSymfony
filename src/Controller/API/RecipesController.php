@@ -2,6 +2,7 @@
 
 namespace App\Controller\API;
 
+use App\DTO\PaginationDTO;
 use App\Entity\Recipe;
 use App\Repository\RecipeRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -13,15 +14,19 @@ use Symfony\Component\Routing\Requirement\Requirement;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
 use Doctrine\ORM\EntityManagerInterface;
+use App\DTO\MapQueryString;
 
 
 class RecipesController extends AbstractController
 {
 
   #[Route("/api/recipes", methods: ['GET'])]
-  public function index(RecipeRepository $repository, Request $request, SerializerInterface $serializer): Response
-  {
-    $recipes = $repository->paginateRecipes($request->query->getInt('page', 1));
+  public function index(
+    RecipeRepository $repository,
+    #[MapQueryString]
+    ?PaginationDTO $paginationDTO = null
+  ) {
+    $recipes = $repository->paginateRecipes($paginationDTO?->page);
     return $this->json($recipes, 200, [], [
       'groups' => ['recipes.index']
     ]);
