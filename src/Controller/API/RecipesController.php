@@ -7,10 +7,12 @@ use App\Repository\RecipeRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Requirement\Requirement;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
+use Doctrine\ORM\EntityManagerInterface;
 
 
 class RecipesController extends AbstractController
@@ -35,14 +37,22 @@ class RecipesController extends AbstractController
   }
 
   #[Route("/api/recipes", methods: ['POST'])]
-  public function create(Request $request, SerializerInterface $serializer)
-  {
-    $recipe = new Recipe();
+  public function create(
+    Request $request,
+    #[MapRequestPayload(
+      serializationContext: [
+        'groups' => ['recipes.create']
+      ]
+    )]
+    Recipe $recipe,
+    EntityManagerInterface $em
+  ) {
     $recipe->setCreatedAt(new \DateTimeImmutable());
     $recipe->setUpdatedAt(new \DateTimeImmutable());
-    dd($serializer->deserialize($request->getContent(), Recipe::class, 'json', [
-      AbstractNormalizer::OBJECT_TO_POPULATE => $recipe,
-      'groups' => ['recipes.create']
-    ]));
+    $em->persist($recipe);
+    $em->flush();
+    return $this->json($recipe, 200, [], [
+      'groups' => ['recipes.index', 'recipes.show']
+    ]);
   }
 }
