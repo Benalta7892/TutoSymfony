@@ -17,12 +17,12 @@ class APIAuthenticator extends AbstractAuthenticator
 
   public function supports(Request $request): ?bool
   {
-    return $request->headers->has('Authorization') && str_contains($request->headers->get('Authorization'), 'Bearer');
+    return $request->headers->has('Authorization') && str_contains($request->headers->get('Authorization'), 'Bearer ');
   }
 
   public function authenticate(Request $request): Passport
   {
-    $identifier = str_replace('Bearer', '', $request->headers->get('Authorization'));
+    $identifier = str_replace('Bearer ', '', $request->headers->get('Authorization'));
     return new SelfValidatingPassport(
       new UserBadge($identifier)
     );
