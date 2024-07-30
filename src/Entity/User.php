@@ -143,7 +143,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     return $this->isVerified;
   }
 
-  public function setVerified(bool $isVerified): static
+  public function setIsVerified(bool $isVerified): static
   {
     $this->isVerified = $isVerified;
 
@@ -152,13 +152,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
   public function getApiToken(): ?string
   {
-      return $this->apiToken;
+    return $this->apiToken;
   }
 
   public function setApiToken(?string $apiToken): static
   {
-      $this->apiToken = $apiToken;
+    $this->apiToken = $apiToken;
 
-      return $this;
+    return $this;
   }
 }
