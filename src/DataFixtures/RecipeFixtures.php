@@ -44,6 +44,7 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
         ->setCreatedAt(\DateTimeImmutable::createFromMutable($faker->dateTime()))
         ->setContent($faker->paragraphs(10, true))
         ->setCategory($this->getReference($faker->randomElement($categories)))
+        ->setYuser($this->getReference('USER' . $faker->numberBetween(1, 10)))
         ->setDuration($faker->numberBetween(2, 60));
       $manager->persist($recipe);
     }

@@ -185,13 +185,13 @@ class Recipe
 
   public function getYuser(): ?User
   {
-      return $this->yuser;
+    return $this->yuser;
   }
 
   public function setYuser(?User $yuser): static
   {
-      $this->yuser = $yuser;
+    $this->yuser = $yuser;
 
-      return $this;
+    return $this;
   }
 }
