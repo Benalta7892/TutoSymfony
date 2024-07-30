@@ -37,7 +37,7 @@ class PaginationNormalizer implements NormalizerInterface
     return $data instanceof PaginationInterface;
   }
 
-  public function getSupportedtypes(?string $format): array
+  public function getSupportedTypes(?string $format): array
   {
     return [PaginationInterface::class => true];
   }
