@@ -12,13 +12,27 @@ class RecipeVoter extends Voter
 {
   public const EDIT = 'RECIPE_EDIT';
   public const VIEW = 'RECIPE_VIEW';
+  public const CREATE = 'RECIPE_CREATE';
+  public const LIST = 'RECIPE_LIST';
+  public const LIST_ALL = 'RECIPE_ALL';
+
+  // public function __construct(private readonly Security $security)
+  // {
+  // }
 
   protected function supports(string $attribute, mixed $subject): bool
   {
-    return in_array($attribute, [self::EDIT, self::VIEW])
-      && $subject instanceof \App\Entity\Recipe;
+    return
+      in_array($attribute, [self::CREATE, self::LIST, self::LIST_ALL]) ||
+      (
+        in_array($attribute, [self::EDIT, self::VIEW])
+        && $subject instanceof \App\Entity\Recipe
+      );
   }
 
+  /**
+   * @param Recipe|null $subject
+   */
   protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token): bool
   {
     $user = $token->getUser();
@@ -28,19 +42,20 @@ class RecipeVoter extends Voter
       return false;
     }
 
-    if (!$subject instanceof Recipe) {
-      return false;
-    }
+    // if (!$subject instanceof Recipe) {
+    //   return false;
+    // }
 
     // ... (check conditions and return true to grant permission) ...
     switch ($attribute) {
       case self::EDIT:
-        return $subject->getUser()->getId() === $user->getId();
+        return $subject->getYuser()->getId() === $user->getId();
         break;
 
       case self::VIEW:
-        // logic to determine if the user can VIEW
-        // return true or false
+      case self::LIST:
+      case self::CREATE:
+        return true;
         break;
     }
 
