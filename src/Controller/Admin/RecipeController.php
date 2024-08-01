@@ -113,14 +113,15 @@ class RecipeController extends AbstractController
   public function remove(Request $request, Recipe $recipe, EntityManagerInterface $em)
   {
     $recipeId = $recipe->getId();
+    $message = 'La recette a bien été supprimée';
     $em->remove($recipe);
     $em->flush();
     if ($request->getPreferredFormat() === TurboBundle::STREAM_FORMAT) {
       $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
-      return $this->RENDER('admin/recipe/delete.html.twig', ['recipeId' => $recipeId]);
+      return $this->RENDER('admin/recipe/delete.html.twig', ['recipeId' => $recipeId, 'message' => $message]);
     }
 
-    $this->addFlash('success', 'La recette a bien été supprimée');
+    $this->addFlash('success', $message);
     return $this->redirectToRoute('admin.recipe.index');
   }
 }
