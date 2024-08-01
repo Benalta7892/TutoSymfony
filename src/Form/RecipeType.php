@@ -41,11 +41,7 @@ class RecipeType extends AbstractType
         'required' => false,
       ])
       ->add('thumbnailFile', FileType::class)
-      ->add('category', EntityType::class, [
-        'class' => Category::class,
-        'choice_label' => 'name',
-        'autocomplete' => true
-      ])
+      ->add('category', CategoryAutocompleteField::class)
       ->add('content', TextareaType::class, [
         'empty_data' => ''
       ])
