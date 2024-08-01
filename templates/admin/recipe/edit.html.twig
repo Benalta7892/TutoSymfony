@@ -3,15 +3,13 @@
 {% block title "Recette : " ~ recipe.title %}
 
 {% block body %}
-<h1>{{ recipe.title }}</h1>
+  <h1>{{ recipe.title }}</h1>
 
-{# <p>
-  <img src="/recettes/images/{{ recipe.thumbnail }}" alt="">
-</p> #}
+  <img src="{{ vich_uploader_asset(recipe, 'thumbnailFile') }}" alt="">
 
-<img src="{{ vich_uploader_asset(recipe, 'thumbnailFile') }}" alt="">
-
-  {{ form(form) }}
+  <turbo-frame id="recipe_{{ recipe.id }}">
+    {{ form(form) }}
+  </turbo-frame>
 
 
 {% endblock %}
