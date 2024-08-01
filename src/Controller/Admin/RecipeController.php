@@ -99,10 +99,7 @@ class RecipeController extends AbstractController
       // $file->move($this->getParameter('kernel.project_dir') . '/public/recettes/images', $fileName);
       // $recipe->setThumbnail($fileName);
       $em->flush();
-      $this->addFlash(
-        'success',
-        'La recette a bien été modifié'
-      );
+      $this->addFlash('success', 'La recette a bien été modifiée');
       return $this->redirectToRoute('admin.recipe.index');
     }
     return $this->render('admin/recipe/edit.html.twig', ['recipe' => $recipe, 'form' => $form]);
@@ -118,7 +115,7 @@ class RecipeController extends AbstractController
     $em->flush();
     if ($request->getPreferredFormat() === TurboBundle::STREAM_FORMAT) {
       $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
-      return $this->RENDER('admin/recipe/delete.html.twig', ['recipeId' => $recipeId, 'message' => $message]);
+      return $this->render('admin/recipe/delete.html.twig', ['recipeId' => $recipeId, 'message' => $message]);
     }
 
     $this->addFlash('success', $message);
