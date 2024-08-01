@@ -18,6 +18,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Requirement\Requirement;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
+use Symfony\UX\Turbo\TurboBundle;
 
 
 
@@ -109,10 +110,16 @@ class RecipeController extends AbstractController
 
   #[Route("/{id}", name: "delete", methods: ['DELETE'], requirements: ['id' => Requirement::DIGITS])]
   #[IsGranted(RecipeVoter::EDIT, subject: 'recipe')]
-  public function remove(Recipe $recipe, EntityManagerInterface $em)
+  public function remove(Request $request, Recipe $recipe, EntityManagerInterface $em)
   {
+    $recipeId = $recipe->getId();
     $em->remove($recipe);
     $em->flush();
+    if ($request->getPreferredFormat() === TurboBundle::STREAM_FORMAT) {
+      $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
+      return $this->RENDER('admin/recipe/delete.html.twig', ['recipeId' => $recipeId]);
+    }
+
     $this->addFlash('success', 'La recette a bien été supprimée');
     return $this->redirectToRoute('admin.recipe.index');
   }
