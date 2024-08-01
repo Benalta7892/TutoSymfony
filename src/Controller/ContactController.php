@@ -26,7 +26,13 @@ class ContactController extends AbstractController
     $form = $this->createForm(ContactType::class, $data);
     $form->handleRequest($request);
     if ($form->isSubmitted() && $form->isValid()) {
-      $dispatcher->dispatch(new ContactRequestEvent($data));
+      try {
+        $dispatcher->dispatch(new ContactRequestEvent($data));
+        $this->addFlash('success', 'Votre email a bien été envoyé.');
+      } catch (\Exception $e) {
+        $this->addFlash('danger', 'Impossible d\'envoyer votre email.');
+      }
+
       // try {
       //   $email = (new TemplatedEmail())
       //     ->to($data->service)
