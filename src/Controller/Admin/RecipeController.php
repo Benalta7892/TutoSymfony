@@ -14,11 +14,13 @@ use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Requirement\Requirement;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
 use Symfony\UX\Turbo\TurboBundle;
+use App\Message\RecipePDFMessage;
 
 
 
@@ -88,7 +90,7 @@ class RecipeController extends AbstractController
 
   #[Route("/{id}", name: "edit", methods: ['GET', 'POST'], requirements: ['id' => Requirement::DIGITS])]
   #[IsGranted(RecipeVoter::EDIT, subject: 'recipe')]
-  public function edit(Recipe $recipe, Request $request, EntityManagerInterface $em, UploaderHelper $helper)
+  public function edit(Recipe $recipe, Request $request, EntityManagerInterface $em, UploaderHelper $helper, MessageBusInterface $messageBus)
   {
     $form = $this->createForm(RecipeType::class, $recipe);
     $form->handleRequest($request);
@@ -99,6 +101,7 @@ class RecipeController extends AbstractController
       // $file->move($this->getParameter('kernel.project_dir') . '/public/recettes/images', $fileName);
       // $recipe->setThumbnail($fileName);
       $em->flush();
+      $messageBus->dispatch(new RecipePDFMessage($recipe->getId()));
       $this->addFlash('success', 'La recette a bien été modifiée');
       return $this->redirectToRoute('admin.recipe.index');
     }
