@@ -1,4 +1,4 @@
-version: "3"
+version: "3.8"
 
 services:
   ###> doctrine/doctrine-bundle ###
@@ -25,7 +25,7 @@ services:
     volumes:
       - database_data:/var/lib/postgresql/data:rw
   gotenberg:
-    network_mode: "host"
+    # network_mode: "host"
     image: gotenberg/gotenberg:8
     ports:
       - "3000:3000"
