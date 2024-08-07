@@ -15,7 +15,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
 use Vich\UploaderBundle\Mapping\Annotation\Uploadable;
 use Vich\UploaderBundle\Mapping\Annotation\UploadableField;
 use Symfony\Component\Serializer\Annotation\Groups;
-use App\Validator\Translatable;
+use Gedmo\Mapping\Annotation\Translatable;
 
 
 #[ORM\Entity(repositoryClass: RecipeRepository::class)]
@@ -35,7 +35,7 @@ class Recipe
   #[BanWord()]
   #[Groups(['recipes.index', 'recipes.create'])]
   #[Translatable]
-  private string $title = '';
+  private ?string $title = '';
 
   #[ORM\Column(length: 255)]
   #[Assert\Length(min: 5)]
@@ -93,7 +93,7 @@ class Recipe
 
   public function getTitle(): string
   {
-    return $this->title;
+    return $this->title ?? '';
   }
 
   public function setTitle(string $title): static
