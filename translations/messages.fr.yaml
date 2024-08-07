@@ -1,0 +1,14 @@
+# Name: Prénom
+# contactForm:
+#   name: Prénom
+#   email: Courriel
+#   service: Service
+#   message: Message
+#   submit: Envoyer l'email
+
+# Welcome: Bienvenue
+
+# choices:
+#   compta: Comptabilité
+#   support: Support
+#   marketing: Marketing
