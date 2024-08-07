@@ -1,14 +1,9 @@
-# Name: Prénom
-# contactForm:
-#   name: Prénom
-#   email: Courriel
-#   service: Service
-#   message: Message
-#   submit: Envoyer l'email
-
-# Welcome: Bienvenue
-
-# choices:
-#   compta: Comptabilité
-#   support: Support
-#   marketing: Marketing
+vich_uploader.form_label.delete_confirm: "Supprimer?"
+vich_uploader.link.download: Télécharger
+Welcome: "Bonjour name"
+# contactForm.name: __contactForm.name
+# contactForm.email: __contactForm.email
+# contactForm.message: __contactForm.message
+# contactForm.submit: __contactForm.submit
+# contactForm.service: __contactForm.service
+# home_recipe_count: "{count, plural,\n    =0    {Aucune recette}\n    =1    {Une recette}\n    other {# recettes}\n}"

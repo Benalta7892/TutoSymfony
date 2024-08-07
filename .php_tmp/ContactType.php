@@ -11,6 +11,7 @@ use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use function Symfony\Component\Translation\t;
 
 class ContactType extends AbstractType
 {
@@ -19,21 +20,21 @@ class ContactType extends AbstractType
     $builder
       ->add('name', textType::class, [
         'empty_data' => '',
-        'label' => 'contactForm.name',
+        'label' => t('contactForm.name')
       ])
       ->add('email', emailType::class, [
         'empty_data' => '',
-        'label' => 'contactForm.email',
+        'label' => t('contactForm.email')
       ])
       ->add('message', textareaType::class, [
         'empty_data' => '',
-        'label' => 'contactForm.message',
+        'label' => t('contactForm.message')
       ])
       ->add('save', SubmitType::class, [
-        'label' => 'contactForm.submit',
+        'label' => t('contactForm.submit')
       ])
       ->add('service', ChoiceType::class, [
-        'label' => 'contactForm.service',
+        'label' => t('contactForm.service'),
         'choices'  => [
           'choices.compta' => 'compta@demo.fr',
           'choices.support' => 'support@demo.fr',

@@ -1,0 +1,17 @@
+Welcome: __Welcome
+home_recipe_count: >
+  {count, plural,
+      =0 {Aucune recette}
+      one {Une recette}
+      other {# recettes!}
+  }
+contactForm:
+  name: "Prénom"
+  email: "Courriel"
+  message: "Message"
+  submit: "Envoyer l'email"
+  service: "Service"
+choices:
+  compta: "Comptabilité"
+  support: "Support"
+  marketing: "Marketing"

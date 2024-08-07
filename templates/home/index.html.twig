@@ -4,5 +4,11 @@
 
 {% block body %}
   {# {% trans %} Welcome {% endtrans %} #}
-  {{ 'Welcome'|trans }}
+  <h1>
+    {{ 'Welcome'|trans({'name': 'John'}) }}
+  </h1>
+  <p>
+    {{ "home_recipe_count"  | trans({count: 100}) }}
+  </p>
+
 {% endblock %}
